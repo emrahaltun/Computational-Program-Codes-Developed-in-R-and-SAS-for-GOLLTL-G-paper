@@ -58,14 +58,15 @@ return(F)
 OLLTLNd<-function(x,alpha,teta,mu,sigma){
  G<-rep(0,0)
  for(i in 1:length(x)){
-    G[i]<-(2*alpha*teta*dnorm(x[i],mu,sigma)*(1-pnorm(x[i],mu,sigma))
-    *((1-(1-pnorm(x[i],mu,sigma))^2)^((alpha*teta)-1))
-    *(1-((1-(1-pnorm(x[i],mu,sigma))^2))^teta)^(alpha-1))/
-((((1-(1-pnorm(x[i],mu,sigma))^2)^(alpha*teta))
-+((1-((1-(1-pnorm(x[i],mu,sigma))^2))^teta)^(alpha)))^2)
+ G[i]<-(2*alpha*teta*dnorm(x[i],mu,sigma)*(1-pnorm(x[i],mu,sigma))
+ *((1-(1-pnorm(x[i],mu,sigma))^2)^((alpha*teta)-1))
+ *(1-((1-(1-pnorm(x[i],mu,sigma))^2))^teta)^(alpha-1))/
+ ((((1-(1-pnorm(x[i],mu,sigma))^2)^(alpha*teta))
+ +((1-((1-(1-pnorm(x[i],mu,sigma))^2))^teta)^(alpha)))^2)
  }
 return(G)
 }
+
 OLLTLNF<-function(x,alpha,teta,mu,sigma){
  G<-rep(0,0)
  F<-rep(0,0)
@@ -109,7 +110,9 @@ return(G)
 #####
 OLLTLWd<-function(x,alpha,teta,a,b){
  G<-rep(0,0)
+ 
  for(i in 1:length(x)){
+ 
 G[i]<-(2*alpha*teta*dweibull(x[i],shape=b, scale = (1/a))*(1-pweibull(x[i],shape=b,
 scale = (1/a)))*((1-(1-pweibull(x[i],shape=b, 
 scale = (1/a)))^2)^((alpha*teta)-1))*(1-((1-(1-pweibull(x[i],shape=b,
@@ -117,9 +120,12 @@ scale = (1/a)))^2))^teta)^(alpha-1))/((((1-(1-pweibull(x[i],shape=b,
 scale = (1/a)))^2)^(alpha*teta))
 +((1-((1-(1-pweibull(x[i],shape=b, scale = (1/a)))^2))^teta)^(alpha)))^2)
  }
+ 
 return(G)
 }
+
 ######
+
 OLLTLWlikelihood<-function(par){
 alpha<-par[1]
 teta<-par[2]
@@ -128,7 +134,9 @@ b<-par[4]
     G<- -sum(log(OLLTLWd(x,alpha,teta,a,b)))
 return(G)
 }
+
 #####
+
 M<-1
 MLestimate<-matrix(c(0),ncol=4,nrow=1000)
 ###real value
@@ -137,7 +145,9 @@ teta<-0.5
 a<-2
 b<-2
 size<-1500
+
 for (i in 1:1000){
+
 estimate<-matrix(c(0),ncol=4,nrow=10000)
 count1<-0
 repeat {
@@ -148,10 +158,13 @@ repeat {
     x<-rOLLTLW(size,alpha,teta,a,b)
 OLLTLWest <- try(optim(c(alpha,teta,a,b), OLLTLWlikelihood,method="L-BFGS-B",
 hessian=TRUE,lower = c(.01,.01,.01,.01), upper =c(Inf,Inf,Inf,Inf)), silent=TRUE)
+
 if ('try-error' %in% class(OLLTLWest)) next
 else{ 
+
 estimate[count1,]<-OLLTLWest$par
 }
+
 }
 MLestimate[i,1]<-estimate[,1][estimate[,1]!=0]
 MLestimate[i,2]<-estimate[,2][estimate[,2]!=0]
@@ -159,6 +172,7 @@ MLestimate[i,3]<-estimate[,3][estimate[,3]!=0]
 MLestimate[i,4]<-estimate[,4][estimate[,4]!=0]
 print(i)
 }
+
 par(mfrow=c(2,2))
 qqnorm(MLestimate[1:1000,1]); qqline(MLestimate[1:1000,1], col = 2)
 qqnorm(MLestimate[1:1000,2]); qqline(MLestimate[1:1000,2], col = 2)
