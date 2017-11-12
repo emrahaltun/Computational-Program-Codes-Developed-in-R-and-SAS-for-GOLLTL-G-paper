@@ -1,6 +1,7 @@
 # Computational-Program-Codes-Developed-in-R-and-SAS-for-GOLLTL-G-paper###
 
 #######shape of density Weibull#######
+
 OLLTLWd<-function(x,alpha,teta,a,b){
  G<-rep(0,0)
  for(i in 1:length(x)){
@@ -13,7 +14,9 @@ OLLTLWd<-function(x,alpha,teta,a,b){
  }
 return(G)
 }
+
 #####P(X>3)#######
+
 OLLTLWF<-function(x,alpha,teta,a,b){
  G<-rep(0,0)
  F<-rep(0,0)
@@ -28,7 +31,9 @@ OLLTLWF<-function(x,alpha,teta,a,b){
 F<-integrate(G,lower=-Inf,upper=x)$value
 return(F)
 }
+
 #######Heavy tail of Weibull#######
+
 ##a=1,b=4
 1-OLLTLWF(3,.2,5,1,4)
 
@@ -47,7 +52,9 @@ return(F)
 
 1-pweibull(3,shape=1, scale = (1/1))
 ##
+
 ##########################################################
+
 OLLTLNd<-function(x,alpha,teta,mu,sigma){
  G<-rep(0,0)
  for(i in 1:length(x)){
@@ -72,7 +79,9 @@ OLLTLNF<-function(x,alpha,teta,mu,sigma){
 F<-integrate(G,lower=-Inf,upper=x)$value
 return(F)
 }
+
 #######Right tail of normal#######
+
 ##mu=0,sigma=1
 1-OLLTLNF(3,.2,5,0,1)
 1-pnorm(3,0,1)
@@ -88,6 +97,7 @@ OLLTLNF(-3,.35,3,0,2)
 pnorm(-3,0,2)
 
 #######asymptotic distribution of estimator#######
+
 rOLLTLW<-function(n,alpha,teta,a,b){
 G<-rep(0,0)
 u<-runif(n,0,1)
@@ -157,6 +167,7 @@ qqnorm(MLestimate[1:1000,4]); qqline(MLestimate[1:1000,4], col = 2)
 
 
 #######Graphical Simulation Codes#######
+
 library(AdequacyModel)
 cdfgolltlweibull=function(par,x)
 {
@@ -265,28 +276,32 @@ mseb[k]=sum((b-b1)^2)/1000
 
 #######Codes of Regression Models developed in SAS####### 
 
-# data paper martinez 2013#
+#######data paper martinez 2013#######
 
 rm(list=ls(all=TRUE))
 library(survival)
 
-#Loading data set 
+#######Loading data set #######
+
 data<- read.csv("https://goo.gl/Zj78Zb",sep=";")
 attach(dados)
 
-#Defining dummis variables
+#######Defining dummis variables#######
+
 x2<-ifelse(x1=='alone',0,1)
 
 #logit function
 ll<-function(x) exp(x)/(exp(x)+1);  ll2<-function(p) log(p/(1-p))
 
 
-# cdf OLLTL-G
+#######cdf OLLTL-G#######
+
 GW<-function(x,alpha,theta,mu,sigma){
   ((1-(1-G(x,mu,sigma))^2)^(alpha*theta))/((1-(1-G(x,mu,sigma))^2)^(alpha*theta) 
   +(1-(1-(1-G(x,mu,sigma))^2)^theta)^alpha)}
 
-# pdf OLLTL-G
+#######pdf OLLTL-G#######
+
 gw<-function(x,alpha,theta,mu,sigma){
   (2*alpha*theta*g(x,mu,sigma)*(1-G(x,mu,sigma))
   *(1-(1-G(x,mu,sigma))^2)^(alpha*theta-1)
@@ -295,13 +310,15 @@ gw<-function(x,alpha,theta,mu,sigma){
     + (1-(1-(1-G(x,mu,sigma))^2)^theta)^alpha  )^2)}
 
 
-#Cure rate family cdf
+#######Cure rate family cdf#######
+
 GWp<-function(x,alpha,theta,mu,sigma,p){
   (1-p)*(  ((1-(1-G(x,mu,sigma))^2)^(alpha*theta))
   /((1-(1-G(x,mu,sigma))^2)^(alpha*theta) 
   +(1-(1-(1-G(x,mu,sigma))^2)^theta)^alpha))}
 
-#Cure rate family pdf
+#######Cure rate family pdf#######
+
 gwp<-function(x,alpha,theta,mu,sigma,p){
   (1-p)*(  (2*alpha*theta*g(x,mu,sigma)
   *(1-G(x,mu,sigma))
@@ -311,7 +328,8 @@ gwp<-function(x,alpha,theta,mu,sigma,p){
              + (1-(1-(1-G(x,mu,sigma))^2)^theta)^alpha  )^2))}
 
 
-# Log Weibull as basis distribution
+#######Log Weibull as basis distribution#######
+
 g<-function(x,mu,sigma){exp(x)*dweibull(exp(x),shape=1/sigma,scale=exp(mu))}
 G<-function(x,mu,sigma){pweibull(exp(x),shape =1/sigma,scale=exp(mu))}
 
@@ -319,7 +337,8 @@ G<-function(x,mu,sigma){pweibull(exp(x),shape =1/sigma,scale=exp(mu))}
 km <- survfit(Surv(log(time),censur)~x2)
 plot(km,lwd=2,conf.int=F,ylab='Survival',xlab='Time',col=c(1))
 
-#MLEs obtained using SAS (LOLLTL-W location model)
+#######MLEs obtained using SAS (LOLLTL-W location model)#######
+
 curve(1-GWp(x,0.728,    0.274, 3.036,
 exp(-1.4455),ll(-0.1115)),-2,4,add=T,col='royalblue3',lwd=4)
 
@@ -331,7 +350,8 @@ lwd=c(4,4),col=c(1,'royalblue3','orangered3'),
 bty="n",seg.len=2,cex=1.5)
 
 plot(km,lwd=2,conf.int=F,ylab='Survival',xlab='Time',col=c(1))
-#MLEs obtained using SAS (LOLLTL-W heteroscedastic model)
+
+#######MLEs obtained using SAS (LOLLTL-W heteroscedastic model)#######
 
 curve(1-GWp(x,0.297,    1.537, 2.279,
 exp(-0.664),ll(-0.0986)),-2,4,add=T,col='royalblue1',lwd=4)
